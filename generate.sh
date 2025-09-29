@@ -50,8 +50,8 @@ setup_env() {
     bash Anaconda3-2025.06-0-Linux-x86_64.sh -b -p $HOME/miniconda3
     rm Anaconda3-2025.06-0-Linux-x86_64.sh
     export PATH="$HOME/miniconda3/bin:$PATH"
-    conda init bash
-    source ~/.bashrc
+    #conda init bash
+    #source ~/.bashrc
     conda tos accept
     conda config --set show_channel_urls yes
     conda config --set auto_activate_base false
