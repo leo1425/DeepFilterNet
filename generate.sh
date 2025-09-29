@@ -49,8 +49,8 @@ setup_env() {
 
   # Create and activate virtual environment
   log_info "Creating virtual environment..."
-  python3 -m venv venv
-  source venv/bin/activate
+  #python3 -m venv venv
+  #source venv/bin/activate
   log_success "Virtual environment created"
 
 
