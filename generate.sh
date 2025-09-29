@@ -43,13 +43,9 @@ setup_env() {
     log_success "pip3 available: $(pip3 --version)"
   fi
 
-  if ! python3 -m venv --help &> /dev/null; then
-    log_info "python3-venv not found. Installing..."
-    sudo apt-get update && sudo apt-get install -y python3.12-venv
-    log_success "python3-venv installed"
-  else
-    log_success "python3-venv available"
-  fi
+  log_info "python3-venv not found. Installing..."
+  sudo apt-get update && sudo apt-get install -y python3.12-venv
+  log_success "python3-venv installed"
 
   # Create and activate virtual environment
   if [ ! -d "venv" ]; then
