@@ -8,8 +8,14 @@ if ! command -v rustup &> /dev/null; then
 else
   echo "Rust is already installed. Skipping installation."
 fi
+if ! command -v pip3 &> /dev/null; then
+  echo "pip3 is not installed."
+  sudo apt install python3-pip
+  exit 1
+else
+  echo "pip3 is installed: $(pip3 --version)"
+fi
 
-sudo apt install python3-pip
 pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
 pip3 install deepfilternet
 pip3 install maturin poetry
