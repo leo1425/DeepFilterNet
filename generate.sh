@@ -35,6 +35,24 @@ setup_env() {
     log_success "pip3 available: $(pip3 --version)"
   fi
 
+  if ! python3 -m venv --help &> /dev/null; then
+    log_info "python3-venv not found. Installing..."
+    sudo apt-get update && sudo apt-get install -y python3.10-venv
+    log_success "python3-venv installed"
+  else
+    log_success "python3-venv available"
+  fi
+
+  # Create and activate virtual environment
+  if [ ! -d "venv" ]; then
+    log_info "Creating virtual environment..."
+    python3 -m venv venv
+    log_success "Virtual environment created"
+  else
+    log_success "Virtual environment already exists"
+  fi
+
+
   log_info "Installing Python dependencies..."
   pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
   pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm
