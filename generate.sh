@@ -53,6 +53,8 @@ setup_env() {
     conda init bash
     source ~/.bashrc
     conda config --set accept_tos yes
+    conda config --set show_channel_urls yes
+    conda config --set auto_activate_base false
     log_success "Conda installed: $(conda --version)"
   else
     log_success "Conda available: $(conda --version)"
