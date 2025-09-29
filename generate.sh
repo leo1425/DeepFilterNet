@@ -17,9 +17,7 @@ else
 fi
 
 pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
-pip3 install deepfilternet
-pip3 install maturin poetry
-pip3 install h5py librosa soundfile
+pip3 install deepfilternet maturin poetry h5py librosa soundfile
 cd ..
 mkdir dataset
 cd dataset
