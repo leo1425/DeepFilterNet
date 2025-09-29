@@ -8,6 +8,8 @@ if ! command -v rustup &> /dev/null; then
 else
   echo "Rust is already installed. Skipping installation."
 fi
+
+sudo apt install python3-pip
 pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
 pip3 install deepfilternet
 pip3 install maturin poetry
