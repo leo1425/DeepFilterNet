@@ -68,6 +68,7 @@ setup_env() {
   else
     log_info "Creating conda environment 'deepfilternet'..."
     conda create -n deepfilternet python=3.12 -y
+    conda activate deepfilternet
     log_success "Conda environment 'deepfilternet' created"
   fi
 
