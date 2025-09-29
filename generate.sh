@@ -8,13 +8,19 @@ cd ..
 mkdir dataset
 cd dataset
 
-echo " -- Downloading Valentini dataset... -- "
-#!/bin/bash
-curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
 
-sudo apt-get install unzip
-unzip -q valentini-noisy.zip
-rm valentini-noisy.zip
+#!/bin/bash
+if [ -z "$(ls -A .)" ]; then
+  echo " -- Downloading Valentini dataset... -- "
+  curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
+
+  sudo apt-get install unzip
+  unzip -q valentini-noisy.zip
+  rm valentini-noisy.zip
+  echo " -- Download complete -- "
+else
+  echo " -- Skipping download: folder is not empty -- "
+fi
 
 cd ../DeepFilterNet
 
