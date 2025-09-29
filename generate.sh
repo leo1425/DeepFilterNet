@@ -37,7 +37,7 @@ setup_env() {
 
   log_info "Installing Python dependencies..."
   pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
-  pip3 install deepfilternet maturin poetry h5py librosa soundfile
+  pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm
   log_success "Python dependencies installed"
 }
 
