@@ -19,6 +19,12 @@ from torch.utils.data import DataLoader, Dataset
 from df.io import resample
 from df.logger import init_logger
 
+def_working_dir = ""
+def _check_file(file: str):
+    file = os.path.join(def_working_dir, file.strip())
+    if not os.path.isfile(file):
+        raise FileNotFoundError(f"file {file} not found")
+    return file
 
 def write_to_h5(
     file_name: str,
@@ -220,12 +226,8 @@ if __name__ == "__main__":
         working_dir = os.path.dirname(args.audio_files)
         data[args.type]["working_dir"] = working_dir
         logger.info(f"Using speech working directory {working_dir}")
+        def_working_dir = working_dir
 
-        def _check_file(file: str):
-            file = os.path.join(working_dir, file.strip())
-            if not os.path.isfile(file):
-                raise FileNotFoundError(f"file {file} not found")
-            return file
 
         with Pool(max(args.num_workers, 1)) as p:
             res = p.imap(_check_file, f, 100)
