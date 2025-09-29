@@ -17,7 +17,7 @@ section()     { echo -e "\n${GREEN}=== $1 ===${NC}\n"; }
 setup_env() {
   section "Setting up environment"
   export PYTHONPATH=$PWD/DeepFilterNet
-
+  sudo apt-get update && sudo apt-get upgrade -y
   if ! command -v rustup &> /dev/null; then
     log_info "Rust not found. Installing..."
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
@@ -37,21 +37,34 @@ setup_env() {
 
   if ! command -v pip3 &> /dev/null; then
     log_info "pip3 not found. Installing..."
-    sudo apt-get update && sudo apt-get install -y python3-pip
+    sudo apt-get update && apt-get install -y python3-pip
     log_success "pip3 installed: $(pip3 --version)"
   else
     log_success "pip3 available: $(pip3 --version)"
   fi
 
-  log_info "python3-venv not found. Installing..."
-  sudo apt-get update && sudo apt-get install -y python3.12-venv
-  log_success "python3-venv installed"
+  # check if conda is installed
+  if ! command -v conda &> /dev/null; then
+    log_info "Conda not found. Installing Miniconda..."
+    curl -O https://repo.anaconda.com/archive/Anaconda3-2025.06-0-Linux-x86_64.sh
+    bash Anaconda3-2025.06-0-Linux-x86_64.sh -b -p $HOME/miniconda3
+    rm Anaconda3-2025.06-0-Linux-x86_64.sh
+    export PATH="$HOME/miniconda3/bin:$PATH"
+    conda init bash
+    source ~/.bashrc
+    log_success "Conda installed: $(conda --version)"
+  else
+    log_success "Conda available: $(conda --version)"
+  fi
 
-  # Create and activate virtual environment
-  log_info "Creating virtual environment..."
-  #python3 -m venv venv
-  #source venv/bin/activate
-  log_success "Virtual environment created"
+  # check if conda environment "deepfilternet" exists
+  if conda info --envs | grep -q "deepfilternet"; then
+    log_success "Conda environment 'deepfilternet' already exists"
+  else
+    log_info "Creating conda environment 'deepfilternet'..."
+    conda create -n deepfilternet python=3.12 -y
+    log_success "Conda environment 'deepfilternet' created"
+  fi
 
 
   log_info "Installing Python dependencies..."
