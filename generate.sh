@@ -78,7 +78,7 @@ setup_env() {
   pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cu129
   pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm icecream
   log_success "Python dependencies installed"
-  log info "Building pyDF-data..."
+  log_info "Building pyDF-data..."
   maturin develop --release -m pyDF-data/Cargo.toml
 
 }
