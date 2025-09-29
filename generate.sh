@@ -13,7 +13,7 @@ echo " -- Downloading Valentini dataset... -- "
 curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
 
 sudo apt-get install unzip
-unzip valentini-noisy.zip
+unzip -q valentini-noisy.zip
 rm valentini-noisy.zip
 
 cd ../DeepFilterNet
