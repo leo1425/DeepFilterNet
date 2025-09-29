@@ -1,6 +1,13 @@
 export PYTHONPATH=$PWD/DeepFilterNet
 echo " -- Setting up environment... -- "
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+if ! command -v rustup &> /dev/null; then
+  echo "Rust is not installed. Installing Rust..."
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  source $HOME/.cargo/env
+  echo "Rust installation complete."
+else
+  echo "Rust is already installed. Skipping installation."
+fi
 pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
 pip3 install deepfilternet
 pip3 install maturin poetry
