@@ -244,3 +244,5 @@ if __name__ == "__main__":
         compression=args.compression,
         num_workers=args.num_workers,
     )
+    # force to close the script
+    os._exit(0)
