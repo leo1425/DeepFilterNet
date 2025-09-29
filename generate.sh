@@ -1,9 +1,9 @@
 export PYTHONPATH=$PWD/DeepFilterNet
 echo " -- Setting up environment... -- "
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-pip install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
-pip install deepfilternet
-pip install maturin poetry
+pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
+pip3 install deepfilternet
+pip3 install maturin poetry
 cd ..
 mkdir dataset
 cd dataset
