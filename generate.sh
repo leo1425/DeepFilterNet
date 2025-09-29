@@ -27,6 +27,14 @@ setup_env() {
     log_success "Rust already installed: $(rustup --version)"
   fi
 
+  if ! dpkg -s libhdf5-dev &> /dev/null; then
+    log_info "libhdf5-dev not found. Installing..."
+    sudo apt-get update && sudo apt-get install -y libhdf5-dev
+    log_success "libhdf5-dev installed"
+  else
+    log_success "libhdf5-dev available"
+  fi
+
   if ! command -v pip3 &> /dev/null; then
     log_info "pip3 not found. Installing..."
     sudo apt-get update && sudo apt-get install -y python3-pip
@@ -37,7 +45,7 @@ setup_env() {
 
   if ! python3 -m venv --help &> /dev/null; then
     log_info "python3-venv not found. Installing..."
-    sudo apt-get update && sudo apt-get install -y python3.10-venv
+    sudo apt-get update && sudo apt-get install -y python3.12-venv
     log_success "python3-venv installed"
   else
     log_success "python3-venv available"
@@ -56,7 +64,8 @@ setup_env() {
 
   log_info "Installing Python dependencies..."
   pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cu129
-  pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm
+  pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm icecream
+  maturin develop --release -m pyDF-data/Cargo.toml
   log_success "Python dependencies installed"
 }
 
