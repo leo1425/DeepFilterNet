@@ -1,66 +1,108 @@
-export PYTHONPATH=$PWD/DeepFilterNet
-echo " -- Setting up environment... -- "
-if ! command -v rustup &> /dev/null; then
-  echo "Rust is not installed. Installing Rust..."
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  source $HOME/.cargo/env
-  echo "Rust installation complete."
-else
-  echo "Rust is already installed. Skipping installation."
-fi
-if ! command -v pip3 &> /dev/null; then
-  echo "pip3 is not installed."
-  sudo apt install python3-pip
-  exit 1
-else
-  echo "pip3 is installed: $(pip3 --version)"
-fi
-
-pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
-pip3 install deepfilternet maturin poetry h5py librosa soundfile
-cd ..
-mkdir dataset
-cd dataset
-
-
 #!/bin/bash
-if [ -z "$(ls -A .)" ]; then
-  echo " -- Downloading Valentini dataset... -- "
-  curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
+set -e  # Exit on error
 
-  sudo apt-get install unzip
-  unzip -q valentini-noisy.zip
-  rm valentini-noisy.zip
-  echo " -- Download complete -- "
-else
-  echo " -- Skipping download: folder is not empty -- "
-fi
+### COLORS ###
+GREEN="\033[0;32m"
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+NC="\033[0m" # No Color
 
-cd ../DeepFilterNet
+### HELPERS ###
+log_info()    { echo -e "${YELLOW}[INFO]${NC} $1"; }
+log_success() { echo -e "${GREEN}[OK]${NC} $1"; }
+log_error()   { echo -e "${RED}[ERROR]${NC} $1"; exit 1; }
+section()     { echo -e "\n${GREEN}=== $1 ===${NC}\n"; }
 
-echo " -- Generate noise files -- "
-python3 extract_noise.py  ../dataset/clean_testset_wav ../dataset/noisy_testset_wav ../dataset/noise_testset_wav
-python3 extract_noise.py  ../dataset/clean_trainset_56spk_wav ../dataset/noisy_trainset_56spk_wav ../dataset/noise_trainset_56spk_wav
-echo " -- Noise files generated -- "
+### SETUP ENVIRONMENT ###
+setup_env() {
+  section "Setting up environment"
+  export PYTHONPATH=$PWD/DeepFilterNet
 
+  if ! command -v rustup &> /dev/null; then
+    log_info "Rust not found. Installing..."
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+    source $HOME/.cargo/env
+    log_success "Rust installed: $(rustup --version)"
+  else
+    log_success "Rust already installed: $(rustup --version)"
+  fi
 
-echo " -- Generate TXT files --"
-./generate_text.sh ../dataset/clean_testset_wav/ ../dataset/clean_testset_wav.txt clean_testset_wav
-./generate_text.sh ../dataset/noise_testset_wav/ ../dataset/noise_testset_wav.txt noise_testset_wav
-./generate_text.sh ../dataset/clean_trainset_56spk_wav/ ../dataset/clean_trainset_56spk_wav.txt clean_trainset_56spk_wav
-./generate_text.sh ../dataset/noise_trainset_56spk_wav/ ../dataset/noise_trainset_56spk_wav.txt noise_trainset_56spk_wav
-echo " -- TXT files generated -- "
+  if ! command -v pip3 &> /dev/null; then
+    log_info "pip3 not found. Installing..."
+    sudo apt-get update && sudo apt-get install -y python3-pip
+    log_success "pip3 installed: $(pip3 --version)"
+  else
+    log_success "pip3 available: $(pip3 --version)"
+  fi
 
-echo " -- Generate HDF5 files -- "
-cd ../dataset/
-python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py noise noise_testset_wav.txt noise_testset_wav.hdf5
-python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py speech clean_testset_wav.txt clean_testset_wav.hdf5
-python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py speech clean_trainset_56spk_wav.txt clean_trainset_56spk.hdf5
-python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py noise noise_trainset_56spk_wav.txt noise_trainset_56spk.hdf5
-echo " -- HDF5 files generated -- "
+  log_info "Installing Python dependencies..."
+  pip3 install torch torchaudio -f https://download.pytorch.org/whl/cpu/torch_stable.html
+  pip3 install deepfilternet maturin poetry h5py librosa soundfile
+  log_success "Python dependencies installed"
+}
 
-echo" -- Copy dataset.cfg -- "
-cp ../DeepFilterNet/dataset.cfg .
-echo " -- dataset.cfg copied -- "
+### DOWNLOAD DATASET ###
+download_dataset() {
+  section "Preparing dataset folder"
+  cd ..
+  mkdir -p dataset
+  cd dataset
 
-echo " -- All done -- "
+  if [ -z "$(ls -A .)" ]; then
+    log_info "Dataset folder is empty. Downloading Valentini dataset..."
+    curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
+    sudo apt-get install -y unzip
+    unzip -q valentini-noisy.zip
+    rm valentini-noisy.zip
+    log_success "Dataset downloaded and extracted"
+  else
+    log_info "Dataset folder not empty. Skipping download"
+  fi
+}
+
+### GENERATE NOISE FILES ###
+generate_noise() {
+  section "Generating noise files"
+  cd ../DeepFilterNet
+  python3 extract_noise.py  ../dataset/clean_testset_wav ../dataset/noisy_testset_wav ../dataset/noise_testset_wav
+  python3 extract_noise.py  ../dataset/clean_trainset_56spk_wav ../dataset/noisy_trainset_56spk_wav ../dataset/noise_trainset_56spk_wav
+  log_success "Noise files generated"
+}
+
+### GENERATE TXT FILES ###
+generate_txt() {
+  section "Generating TXT files"
+  ./generate_text.sh ../dataset/clean_testset_wav/ ../dataset/clean_testset_wav.txt clean_testset_wav
+  ./generate_text.sh ../dataset/noise_testset_wav/ ../dataset/noise_testset_wav.txt noise_testset_wav
+  ./generate_text.sh ../dataset/clean_trainset_56spk_wav/ ../dataset/clean_trainset_56spk_wav.txt clean_trainset_56spk_wav
+  ./generate_text.sh ../dataset/noise_trainset_56spk_wav/ ../dataset/noise_trainset_56spk_wav.txt noise_trainset_56spk_wav
+  log_success "TXT files generated"
+}
+
+### GENERATE HDF5 FILES ###
+generate_hdf5() {
+  section "Generating HDF5 files"
+  cd ../dataset/
+  python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py noise  noise_testset_wav.txt          noise_testset_wav.hdf5
+  python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py speech clean_testset_wav.txt          clean_testset_wav.hdf5
+  python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py speech clean_trainset_56spk_wav.txt   clean_trainset_56spk.hdf5
+  python3 ../DeepFilterNet/DeepFilterNet/df/scripts/prepare_data.py noise  noise_trainset_56spk_wav.txt   noise_trainset_56spk.hdf5
+  log_success "HDF5 files generated"
+}
+
+### COPY CONFIG ###
+copy_cfg() {
+  section "Copying dataset.cfg"
+  cp ../DeepFilterNet/dataset.cfg .
+  log_success "dataset.cfg copied"
+}
+
+### MAIN ###
+setup_env
+download_dataset
+generate_noise
+generate_txt
+generate_hdf5
+copy_cfg
+
+section "All done 🎉"
