@@ -73,6 +73,15 @@ setup_env() {
     log_success "Conda environment 'deepfilternet' created"
   fi
 
+  # Check if we are in the conda environment
+  if [[ "$CONDA_DEFAULT_ENV" != "deepfilternet" ]]; then
+    # stop execution if not in the conda environment
+    log_error "The conda environment 'deepfilternet' is not activated. Please run 'conda activate deepfilternet' and re-run this script."
+    exit 1
+  else
+    log_success "Conda environment 'deepfilternet' is activated"
+  fi
+
 
   log_info "Installing Python dependencies..."
   pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cu129 --quiet --progress-bar=on
