@@ -144,3 +144,8 @@ generate_hdf5
 copy_cfg
 
 section "All done 🎉"
+
+
+# tmux new -s llm_train
+# ctrl + b :detach
+#tmux attach -t llm_train
