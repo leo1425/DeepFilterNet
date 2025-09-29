@@ -52,6 +52,7 @@ setup_env() {
     export PATH="$HOME/miniconda3/bin:$PATH"
     conda init bash
     source ~/.bashrc
+    conda config --set accept_tos yes
     log_success "Conda installed: $(conda --version)"
   else
     log_success "Conda available: $(conda --version)"
