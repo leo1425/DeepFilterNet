@@ -48,14 +48,10 @@ setup_env() {
   log_success "python3-venv installed"
 
   # Create and activate virtual environment
-  if [ ! -d "venv" ]; then
-    log_info "Creating virtual environment..."
-    python3 -m venv venv
-    source venv/bin/activate
-    log_success "Virtual environment created"
-  else
-    log_success "Virtual environment already exists"
-  fi
+  log_info "Creating virtual environment..."
+  python3 -m venv venv
+  source venv/bin/activate
+  log_success "Virtual environment created"
 
 
   log_info "Installing Python dependencies..."
