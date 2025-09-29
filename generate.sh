@@ -50,8 +50,8 @@ setup_env() {
     bash Anaconda3-2025.06-0-Linux-x86_64.sh -b -p $HOME/miniconda3
     rm Anaconda3-2025.06-0-Linux-x86_64.sh
     export PATH="$HOME/miniconda3/bin:$PATH"
-    #conda init bash
-    #source ~/.bashrc
+    conda init bash
+    source ~/.bashrc
     conda tos accept
     conda config --set show_channel_urls yes
     conda config --set auto_activate_base false
@@ -68,6 +68,7 @@ setup_env() {
   else
     log_info "Creating conda environment 'deepfilternet'..."
     conda create -n deepfilternet python=3.12 -y
+    eval "$($HOME/miniconda3/bin/conda shell.bash hook)"
     conda activate deepfilternet
     log_success "Conda environment 'deepfilternet' created"
   fi
@@ -76,8 +77,10 @@ setup_env() {
   log_info "Installing Python dependencies..."
   pip3 install torch torchaudio --index-url https://download.pytorch.org/whl/cu129
   pip3 install deepfilternet maturin poetry h5py librosa soundfile tqdm icecream
-  maturin develop --release -m pyDF-data/Cargo.toml
   log_success "Python dependencies installed"
+  log info "Building pyDF-data..."
+  maturin develop --release -m pyDF-data/Cargo.toml
+
 }
 
 ### DOWNLOAD DATASET ###
