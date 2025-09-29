@@ -52,6 +52,7 @@ setup_env() {
     export PATH="$HOME/miniconda3/bin:$PATH"
     conda init bash
     source ~/.bashrc
+    conda tos accept --override-channels --channel CHANNEL
     conda config --set show_channel_urls yes
     conda config --set auto_activate_base false
     export CONDA_ACCEPT_ALL=true
