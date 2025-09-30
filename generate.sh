@@ -102,7 +102,14 @@ download_dataset() {
   if [ -z "$(ls -A .)" ]; then
     log_info "Dataset folder is empty. Downloading Valentini dataset..."
     curl -L -o valentini-noisy.zip https://www.kaggle.com/api/v1/datasets/download/muhmagdy/valentini-noisy
-    sudo apt-get install -y unzip
+    if ! command -v unzip &> /dev/null; then
+      log_info "unzip not found. Installing..."
+      sudo apt-get install -y unzip
+      log_success "unzip installed"
+    else
+      log_success "unzip available"
+    fi
+    log_info "Extracting dataset..."
     unzip -q valentini-noisy.zip
     rm valentini-noisy.zip
     log_success "Dataset downloaded and extracted"
@@ -157,7 +164,7 @@ generate_hdf5
 copy_cfg
 
 section "All done 🎉"
-
+log_info "use  conda init bash & source ~/.bashrc"
 
 # tmux new -s llm_train
 # ctrl + b :detach
